@@ -30,7 +30,7 @@ jobs:
         run: |
           set -o pipefail
           if ! flutter build apk --release 2>&1 | tee build.log; then
-            msg=$(grep -iE "error|exception|failed|what went wrong|unresolved|not found" build.log | tail -n 60 | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
+            msg=$( { grep -E "^e: " build.log | head -n 25; grep -iE "error|exception|failed|what went wrong|unresolved|not found" build.log | tail -n 30; } | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
             echo "::error title=flutter build failed::$msg"
             exit 1
           fi
@@ -39,4 +39,33 @@ jobs:
         with:
           name: demandium-user-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.38.10'
+          cache: true
+
+      - run: flutter pub get
+      - name: Build web
+        shell: bash
+        run: |
+          set -o pipefail
+          if ! flutter build web --release 2>&1 | tee build.log; then
+            msg=$(grep -iE "error|exception|failed" build.log | tail -n 40 | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=flutter web build failed::$msg"
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demandium-user-web
+          path: build/web
           retention-days: 30
