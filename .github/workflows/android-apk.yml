@@ -58,7 +58,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          if ! flutter build web --release 2>&1 | tee build.log; then
+          if ! flutter build web --release --base-href /public/web/ 2>&1 | tee build.log; then
             msg=$(grep -iE "error|exception|failed" build.log | tail -n 40 | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
             echo "::error title=flutter web build failed::$msg"
             exit 1
@@ -68,4 +68,5 @@ jobs:
         with:
           name: demandium-user-web
           path: build/web
+          include-hidden-files: true
           retention-days: 30
