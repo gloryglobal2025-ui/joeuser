@@ -30,7 +30,7 @@ jobs:
         run: |
           set -o pipefail
           if ! flutter build apk --release 2>&1 | tee build.log; then
-            msg=$( { grep -E "^e: " build.log | head -n 25; grep -iE "error|exception|failed|what went wrong|unresolved|not found" build.log | tail -n 30; } | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
+            msg=$( { grep -E "^e: |AndroidManifest|[Mm]anifest merger|Attribute .* is also present" build.log | head -n 25; grep -iE "error|exception|failed|what went wrong|unresolved|not found" build.log | tail -n 30; } | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
             echo "::error title=flutter build failed::$msg"
             exit 1
           fi
