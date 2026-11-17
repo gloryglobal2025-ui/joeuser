@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         multiDexEnabled = true
-        applicationId = "com.sixamtech.demandium.user"
+        applicationId = "com.joeerands.user"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = flutter.versionCode
